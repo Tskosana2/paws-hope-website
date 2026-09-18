@@ -1,72 +1,173 @@
 /* =========================================================
    Paws & Hope Animal Shelter — style.css
-   Colour palette (from Website Project Proposal, Section 5):
-     Primary:  #2E8B87 (soft teal)
-     Neutral:  #FDF6EC (cream)
-     Accent:   #F4A259 (warm orange)
-   Fonts: Poppins (headings) / Nunito (body) — loaded via Google Fonts
-          in each page's <head>.
+   WEDE5020 Part 2: CSS Styling and Responsive Design
+
+   Structure of this file:
+     1. CSS custom properties (design tokens)
+     2. CSS reset / base styles
+     3. Typography
+     4. Page shell layout (CSS Grid)
+     5. Header / navigation (incl. hamburger menu)
+     6. Hero (crossfade)
+     7. Cards, showcase, about photo
+     8. Forms
+     9. Footer
+     10. Responsive breakpoints (media queries, em-based)
    ========================================================= */
 
-* {
+/* ---------------------------------------------------------
+   1. Design tokens
+   Centralising colour, spacing and type values here means
+   the rest of the sheet can restyle the whole site by
+   changing a handful of variables — this is what the brief
+   calls "taking advantage of the cascade" to keep the number
+   of selectors down.
+   --------------------------------------------------------- */
+:root {
+  /* Colour palette (from the approved Website Project Proposal) */
+  --colour-primary: #2E8B87;   /* soft teal */
+  --colour-primary-dark: #256e6b;
+  --colour-neutral: #FDF6EC;   /* cream */
+  --colour-accent: #F4A259;    /* warm orange */
+  --colour-accent-dark: #d98a3f;
+  --colour-text: #333333;
+  --colour-text-muted: #666666;
+  --colour-border: #e0e0e0;
+  --colour-surface: #ffffff;
+
+  /* Typographic scale (a minor-third-ish scale, expressed in rem) */
+  --font-heading: 'Poppins', Arial, Helvetica, sans-serif;
+  --font-body: 'Nunito', Arial, Helvetica, sans-serif;
+  --step--1: 0.9rem;
+  --step-0: 1rem;
+  --step-1: 1.2rem;
+  --step-2: 1.6rem;
+  --step-3: 2.25rem;
+
+  /* Spacing scale (rem-based, used instead of one-off pixel values) */
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1.25rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+
+  /* Layout */
+  --content-max-width: 1100px;
+  --radius: 8px;
+}
+
+/* ---------------------------------------------------------
+   2. CSS reset / base styles
+   A lightweight reset so the site starts from a consistent
+   baseline across browsers, rather than relying on each
+   browser's own default stylesheet.
+   --------------------------------------------------------- */
+*,
+*::before,
+*::after {
   box-sizing: border-box;
+}
+
+* {
   margin: 0;
   padding: 0;
 }
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  font-family: 'Nunito', Arial, Helvetica, sans-serif;
-  color: #333333;
-  background-color: #FDF6EC;
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  color: var(--colour-text);
+  background-color: var(--colour-neutral);
   line-height: 1.6;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
 }
 
-h1, h2, h3 {
-  font-family: 'Poppins', Arial, Helvetica, sans-serif;
-  color: #2E8B87;
-  line-height: 1.3;
+ul, ol {
+  list-style: none;
 }
 
-h1 { font-size: 2.25rem; margin-bottom: 0.75rem; }
-h2 { font-size: 1.6rem; margin-bottom: 0.75rem; }
-h3 { font-size: 1.2rem; margin-bottom: 0.5rem; }
-
-p { margin-bottom: 0.75rem; }
-
-a {
-  color: #2E8B87;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-a:hover,
-a:focus {
-  color: #F4A259;
-  text-decoration: underline;
-}
-
-img {
+img, picture {
   max-width: 100%;
   display: block;
 }
 
-/* ---------- Header / Navigation ---------- */
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* ---------------------------------------------------------
+   3. Typography
+   --------------------------------------------------------- */
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  color: var(--colour-primary);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+h1 { font-size: var(--step-3); margin-bottom: var(--space-sm); }
+h2 { font-size: var(--step-2); margin-bottom: var(--space-sm); }
+h3 { font-size: var(--step-1); margin-bottom: var(--space-xs); }
+
+p { margin-bottom: var(--space-sm); }
+
+a {
+  color: var(--colour-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--colour-accent);
+  text-decoration: underline;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--colour-primary);
+  outline-offset: 2px;
+}
+
+a:active {
+  color: var(--colour-accent-dark);
+}
+
+/* ---------------------------------------------------------
+   4. Page shell layout
+   The <body> element itself is used as a CSS Grid container
+   with three implicit rows (header / main / footer, via
+   "1fr" for the middle row) — a simple, semantic way to pin
+   the footer to the bottom of short pages without a wrapper
+   <div>, alongside the Flexbox and Grid used within
+   components further down this sheet.
+   --------------------------------------------------------- */
+
+/* ---------------------------------------------------------
+   5. Header / Navigation
+   --------------------------------------------------------- */
 .site-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 2rem;
-  background-color: #ffffff;
-  border-bottom: 3px solid #2E8B87;
+  padding: var(--space-md) var(--space-lg);
+  background-color: var(--colour-surface);
+  border-bottom: 3px solid var(--colour-primary);
   position: relative;
 }
 
 .logo img {
-  height: 56px;
+  height: 3.5rem;
   width: auto;
 }
 
@@ -75,8 +176,8 @@ img {
   display: none;
   flex-direction: column;
   justify-content: space-between;
-  width: 30px;
-  height: 22px;
+  width: 1.875rem;
+  height: 1.375rem;
   background: none;
   border: none;
   cursor: pointer;
@@ -88,39 +189,45 @@ img {
   display: block;
   height: 3px;
   width: 100%;
-  background-color: #2E8B87;
+  background-color: var(--colour-primary);
   border-radius: 2px;
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-/* Animate hamburger into an "X" when menu is open */
-.nav-toggle.is-open span:nth-child(1) {
-  transform: translateY(9.5px) rotate(45deg);
-}
-.nav-toggle.is-open span:nth-child(2) {
-  opacity: 0;
-}
-.nav-toggle.is-open span:nth-child(3) {
-  transform: translateY(-9.5px) rotate(-45deg);
+.nav-toggle:hover span {
+  background-color: var(--colour-accent);
 }
 
+/* Animate hamburger into an "X" when the menu is open */
+.nav-toggle.is-open span:nth-child(1) { transform: translateY(9.5px) rotate(45deg); }
+.nav-toggle.is-open span:nth-child(2) { opacity: 0; }
+.nav-toggle.is-open span:nth-child(3) { transform: translateY(-9.5px) rotate(-45deg); }
+
 .main-nav ul {
-  list-style: none;
   display: flex;
-  gap: 1.5rem;
+  gap: var(--space-md);
 }
 
 .main-nav a {
+  display: inline-block;
   font-weight: 600;
-  padding: 0.5rem;
+  padding: var(--space-xs);
+  border-bottom: 2px solid transparent;
+}
+
+.main-nav a:hover {
+  text-decoration: none;
+  border-bottom-color: var(--colour-accent);
 }
 
 .main-nav a.active {
-  color: #F4A259;
-  border-bottom: 2px solid #F4A259;
+  color: var(--colour-accent);
+  border-bottom-color: var(--colour-accent);
 }
 
-/* ---------- Hero (smooth crossfade, alternates every 10s via JS) ---------- */
+/* ---------------------------------------------------------
+   6. Hero (smooth crossfade, alternates every 10s via JS)
+   --------------------------------------------------------- */
 .hero {
   position: relative;
   text-align: center;
@@ -152,56 +259,66 @@ img {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.25rem;
-  padding: 1.5rem;
+  gap: var(--space-md);
+  padding: var(--space-md);
   background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.45) 100%);
   z-index: 2;
 }
 
 .hero-overlay h1 {
-  color: #ffffff;
+  color: var(--colour-surface);
   text-shadow: 0 2px 6px rgba(0,0,0,0.4);
   max-width: 700px;
 }
 
-.hero .cta-button {
+.cta-button {
   display: inline-block;
   padding: 0.85rem 2rem;
-  background-color: #F4A259;
-  color: #ffffff;
+  background-color: var(--colour-accent);
+  color: var(--colour-surface);
   font-weight: 700;
   border-radius: 6px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
-.hero .cta-button:hover {
-  background-color: #d98a3f;
+.cta-button:hover {
+  background-color: var(--colour-accent-dark);
   text-decoration: none;
-  color: #ffffff;
+  color: var(--colour-surface);
 }
 
-/* ---------- Main content sections ---------- */
+.cta-button:active {
+  transform: translateY(1px);
+}
+
+/* ---------------------------------------------------------
+   7. Main content: cards, showcase, about photo
+   --------------------------------------------------------- */
 main {
-  max-width: 1100px;
+  max-width: var(--content-max-width);
   margin: 0 auto;
-  padding: 2rem;
+  padding: var(--space-lg);
+  width: 100%;
 }
 
 section {
-  margin-bottom: 2.5rem;
+  margin-bottom: var(--space-xl);
 }
 
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
+  gap: var(--space-md);
 }
 
 .card {
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 1.25rem;
+  background-color: var(--colour-surface);
+  border: 1px solid var(--colour-border);
+  border-radius: var(--radius);
+  padding: var(--space-md);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -210,16 +327,16 @@ section {
   box-shadow: 0 6px 16px rgba(0,0,0,0.08);
 }
 
-/* ---------- Showcase (full-width feature image) ---------- */
+/* Showcase (full-width feature image + text) */
 .showcase {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  gap: var(--space-lg);
   align-items: center;
-  background-color: #ffffff;
-  border-radius: 8px;
+  background-color: var(--colour-surface);
+  border-radius: var(--radius);
   overflow: hidden;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--colour-border);
   box-shadow: 0 4px 14px rgba(0,0,0,0.05);
 }
 
@@ -238,16 +355,16 @@ section {
 }
 
 .showcase-text {
-  padding: 1.5rem 1.5rem 1.5rem 0;
+  padding: var(--space-md) var(--space-md) var(--space-md) 0;
 }
 
-/* ---------- About page image ---------- */
+/* About page photo */
 .about-photo {
-  border-radius: 8px;
+  border-radius: var(--radius);
   overflow: hidden;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--colour-border);
   box-shadow: 0 4px 14px rgba(0,0,0,0.05);
-  margin: 1rem 0 1.5rem;
+  margin: var(--space-md) 0 var(--space-md);
   max-width: 640px;
 }
 
@@ -266,25 +383,27 @@ section {
 }
 
 .about-photo figcaption {
-  padding: 0.75rem 1rem;
-  font-size: 0.9rem;
-  color: #666666;
-  background-color: #ffffff;
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--step--1);
+  color: var(--colour-text-muted);
+  background-color: var(--colour-surface);
 }
 
-/* ---------- Forms (Enquiry / Contact) ---------- */
+/* ---------------------------------------------------------
+   8. Forms (Enquiry / Contact)
+   --------------------------------------------------------- */
 form {
   max-width: 600px;
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 1.5rem;
+  background-color: var(--colour-surface);
+  border: 1px solid var(--colour-border);
+  border-radius: var(--radius);
+  padding: var(--space-md);
 }
 
 label {
   display: block;
   font-weight: 600;
-  margin-top: 1rem;
+  margin-top: var(--space-md);
   margin-bottom: 0.25rem;
 }
 
@@ -295,59 +414,74 @@ textarea {
   padding: 0.6rem;
   border: 1px solid #cccccc;
   border-radius: 4px;
-  font-family: inherit;
-  font-size: 1rem;
+  font-size: var(--step-0);
+  background-color: var(--colour-surface);
+  transition: border-color 0.2s ease;
 }
 
-input:focus,
-select:focus,
-textarea:focus {
-  outline: 2px solid #2E8B87;
-  outline-offset: 1px;
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: var(--colour-primary);
 }
 
 button[type="submit"] {
-  margin-top: 1.5rem;
+  margin-top: var(--space-md);
   padding: 0.75rem 1.75rem;
-  background-color: #2E8B87;
-  color: #ffffff;
+  background-color: var(--colour-primary);
+  color: var(--colour-surface);
   border: none;
   border-radius: 4px;
   font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
 button[type="submit"]:hover {
-  background-color: #256e6b;
+  background-color: var(--colour-primary-dark);
+}
+
+button[type="submit"]:active {
+  transform: translateY(1px);
 }
 
 .form-note {
-  font-size: 0.9rem;
-  color: #666666;
-  margin-top: 0.75rem;
+  font-size: var(--step--1);
+  color: var(--colour-text-muted);
+  margin-top: var(--space-sm);
 }
 
-/* ---------- Footer ---------- */
+/* ---------------------------------------------------------
+   9. Footer
+   --------------------------------------------------------- */
 .site-footer {
-  background-color: #2E8B87;
-  color: #FDF6EC;
+  background-color: var(--colour-primary);
+  color: var(--colour-neutral);
   text-align: center;
-  padding: 1.5rem;
-  margin-top: 3rem;
+  padding: var(--space-md);
 }
 
 .site-footer a {
-  color: #FDF6EC;
+  color: var(--colour-neutral);
   text-decoration: underline;
 }
 
+.site-footer a:hover {
+  color: var(--colour-accent);
+}
+
 /* =========================================================
-   Cross-platform / responsive behaviour
+   10. Responsive breakpoints
+   Breakpoints are expressed in em (relative to the browser's
+   base font size of 16px) rather than px, per Part 2's
+   guidance on using relative units:
+     48em ≈ 768px  (tablet and below)
+     30em ≈ 480px  (small phones)
    ========================================================= */
 
-/* Tablet and below: collapse nav into a hamburger menu */
-@media (max-width: 768px) {
+/* Tablet and below: collapse nav into a hamburger menu,
+   single-column showcase, shorter hero */
+@media (max-width: 48em) {
   .nav-toggle {
     display: flex;
   }
@@ -357,8 +491,8 @@ button[type="submit"]:hover {
     top: 100%;
     left: 0;
     right: 0;
-    background-color: #ffffff;
-    border-bottom: 3px solid #2E8B87;
+    background-color: var(--colour-surface);
+    border-bottom: 3px solid var(--colour-primary);
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease;
@@ -366,13 +500,13 @@ button[type="submit"]:hover {
   }
 
   .main-nav.is-open {
-    max-height: 400px;
+    max-height: 25rem;
   }
 
   .main-nav ul {
     flex-direction: column;
     gap: 0;
-    padding: 0.5rem 0;
+    padding: var(--space-xs) 0;
   }
 
   .main-nav li {
@@ -381,7 +515,7 @@ button[type="submit"]:hover {
 
   .main-nav a {
     display: block;
-    padding: 0.9rem 2rem;
+    padding: 0.9rem var(--space-lg);
   }
 
   .showcase {
@@ -393,7 +527,7 @@ button[type="submit"]:hover {
   }
 
   .showcase-text {
-    padding: 0 1.5rem 1.5rem;
+    padding: 0 var(--space-md) var(--space-md);
   }
 
   .hero {
@@ -402,19 +536,19 @@ button[type="submit"]:hover {
 }
 
 /* Small phones: tighten spacing and type scale */
-@media (max-width: 480px) {
+@media (max-width: 30em) {
   .site-header {
-    padding: 0.75rem 1rem;
+    padding: var(--space-sm) var(--space-md);
   }
 
   main {
-    padding: 1.25rem;
+    padding: var(--space-md);
   }
 
   h1 { font-size: 1.75rem; }
   h2 { font-size: 1.35rem; }
 
   form {
-    padding: 1rem;
+    padding: var(--space-md);
   }
 }
